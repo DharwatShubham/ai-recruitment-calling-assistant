@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Recruitment Calling Assistant</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 24px 40px;
+        }
+
+        header h1 {
+            font-size: 26px;
+        }
+
+        header p {
+            margin-top: 6px;
+            color: #9ca3af;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 30px 40px;
+        }
+
+        .status {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .online {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .offline {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 13px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .loading {
+            color: #6b7280;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .available {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .booked {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        @media (max-width: 1000px) {
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>AI Recruitment Calling Assistant</h1>
+
+    <p>
+        AI-powered recruitment automation dashboard
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- SERVER STATUS -->
+
+    <div class="status">
+
+        Server Status:
+
+        <span id="serverStatus" class="loading">
+            Checking...
+        </span>
+
+    </div>
+
+
+    <!-- ANALYTICS CARDS -->
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <h3>
+                Total Candidates
+            </h3>
+
+            <div
+                id="totalCandidates"
+                class="number">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Interviews Scheduled
+            </h3>
+
+            <div
+                id="interviewsScheduled"
+                class="number">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Conversion Rate
+            </h3>
+
+            <div
+                id="conversionRate"
+                class="number">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Call Success Rate
+            </h3>
+
+            <div
+                id="callSuccessRate"
+                class="number">
+                -
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- CANDIDATES -->
+
+    <div class="section">
+
+        <h2>
+            Candidates
+        </h2>
+
+        <div id="candidateContainer">
+
+            <p class="loading">
+                Loading candidates...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- JOBS -->
+
+    <div class="section">
+
+        <h2>
+            Open Jobs
+        </h2>
+
+        <div id="jobContainer">
+
+            <p class="loading">
+                Loading jobs...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- CALL ANALYTICS -->
+
+    <div class="section">
+
+        <h2>
+            Call Analytics
+        </h2>
+
+        <div id="callAnalytics">
+
+            <p class="loading">
+                Loading call analytics...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- INTERVIEW AVAILABILITY -->
+
+    <div class="section">
+
+        <h2>
+            Interview Availability
+        </h2>
+
+        <div id="availability">
+
+            <p class="loading">
+                Loading availability...
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+// ============================================================
+// API BASE URL
+// ============================================================
+
+const API = window.location.origin;
+
+
+// ============================================================
+// HEALTH CHECK
+// ============================================================
+
+async function loadHealth() {
+
+    try {
+
+        const response =
+            await fetch(`${API}/health`);
+
+        const data =
+            await response.json();
+
+
+        if (data.status === "online") {
+
+            document.getElementById(
+                "serverStatus"
+            ).innerHTML =
+                `<span class="online">● Online</span>`;
+
+        } else {
+
+            document.getElementById(
+                "serverStatus"
+            ).innerHTML =
+                `<span class="offline">● Offline</span>`;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Health check error:",
+            error
+        );
+
+        document.getElementById(
+            "serverStatus"
+        ).innerHTML =
+            `<span class="offline">● Offline</span>`;
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD CANDIDATES
+// ============================================================
+
+async function loadCandidates() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/api/candidates`
+            );
+
+
+        const result =
+            await response.json();
+
+
+        const container =
+            document.getElementById(
+                "candidateContainer"
+            );
+
+
+        if (
+            !result.data ||
+            result.data.length === 0
+        ) {
+
+            container.innerHTML =
+                "<p>No candidates found.</p>";
+
+            return;
+        }
+
+
+        let html = `
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Phone
+                        </th>
+
+                        <th>
+                            Source
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+        `;
+
+
+        result.data.forEach(candidate => {
+
+            html += `
+
+                <tr>
+
+                    <td>
+                        ${candidate.full_name}
+                    </td>
+
+                    <td>
+                        ${candidate.email}
+                    </td>
+
+                    <td>
+                        ${candidate.phone_number}
+                    </td>
+
+                    <td>
+                        ${candidate.source}
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+        html += `
+
+                </tbody>
+
+            </table>
+
+        `;
+
+
+        container.innerHTML = html;
+
+
+        document.getElementById(
+            "totalCandidates"
+        ).innerText =
+            result.count;
+
+
+    } catch (error) {
+
+        console.error(
+            "Candidates error:",
+            error
+        );
+
+
+        document.getElementById(
+            "candidateContainer"
+        ).innerHTML =
+            `<p class="error">
+                Failed to load candidates.
+            </p>`;
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD JOBS
+// ============================================================
+
+async function loadJobs() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/api/jobs`
+            );
+
+
+        const result =
+            await response.json();
+
+
+        const container =
+            document.getElementById(
+                "jobContainer"
+            );
+
+
+        if (
+            !result.data ||
+            result.data.length === 0
+        ) {
+
+            container.innerHTML =
+                "<p>No jobs found.</p>";
+
+            return;
+        }
+
+
+        let html = `
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Job Title
+                        </th>
+
+                        <th>
+                            Company
+                        </th>
+
+                        <th>
+                            Location
+                        </th>
+
+                        <th>
+                            Employment
+                        </th>
+
+                        <th>
+                            Salary
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+        `;
+
+
+        result.data.forEach(job => {
+
+            html += `
+
+                <tr>
+
+                    <td>
+                        ${job.title}
+                    </td>
+
+                    <td>
+                        ${job.company_name}
+                    </td>
+
+                    <td>
+                        ${job.location}
+                    </td>
+
+                    <td>
+                        ${job.employment_type}
+                    </td>
+
+                    <td>
+                        ${job.salary_range}
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+        html += `
+
+                </tbody>
+
+            </table>
+
+        `;
+
+
+        container.innerHTML = html;
+
+
+    } catch (error) {
+
+        console.error(
+            "Jobs error:",
+            error
+        );
+
+
+        document.getElementById(
+            "jobContainer"
+        ).innerHTML =
+            `<p class="error">
+                Failed to load jobs.
+            </p>`;
+
+    }
+
+}
+
+
+// ============================================================
+// CANDIDATE ANALYTICS
+// ============================================================
+
+async function loadCandidateAnalytics() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/api/analytics/candidates`
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            result.status !== "success" ||
+            !result.metrics
+        ) {
+
+            return;
+        }
+
+
+        const metrics =
+            result.metrics;
+
+
+        document.getElementById(
+            "totalCandidates"
+        ).innerText =
+            metrics.total_candidates;
+
+
+        document.getElementById(
+            "interviewsScheduled"
+        ).innerText =
+            metrics.interviews_scheduled;
+
+
+        document.getElementById(
+            "conversionRate"
+        ).innerText =
+            metrics.conversion_rate;
+
+
+    } catch (error) {
+
+        console.error(
+            "Candidate analytics error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// CALL ANALYTICS
+// ============================================================
+
+async function loadCallAnalytics() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/api/analytics/calls`
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            result.status !== "success" ||
+            !result.metrics
+        ) {
+
+            return;
+        }
+
+
+        const metrics =
+            result.metrics;
+
+
+        document.getElementById(
+            "callSuccessRate"
+        ).innerText =
+            metrics.call_success_rate;
+
+
+        document.getElementById(
+            "callAnalytics"
+        ).innerHTML = `
+
+            <table>
+
+                <tr>
+
+                    <th>
+                        Total Calls Initiated
+                    </th>
+
+                    <td>
+                        ${metrics.total_calls_initiated}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Completed Calls
+                    </th>
+
+                    <td>
+                        ${metrics.completed_calls}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        In Progress Calls
+                    </th>
+
+                    <td>
+                        ${metrics.in_progress_calls}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Failed Calls
+                    </th>
+
+                    <td>
+                        ${metrics.failed_calls}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Call Success Rate
+                    </th>
+
+                    <td>
+                        ${metrics.call_success_rate}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Average AI Confidence
+                    </th>
+
+                    <td>
+                        ${metrics.average_ai_confidence}
+                    </td>
+
+                </tr>
+
+            </table>
+
+        `;
+
+
+    } catch (error) {
+
+        console.error(
+            "Call analytics error:",
+            error
+        );
+
+
+        document.getElementById(
+            "callAnalytics"
+        ).innerHTML =
+            `<p class="error">
+                Failed to load call analytics.
+            </p>`;
+
+    }
+
+}
+
+
+// ============================================================
+// INTERVIEW AVAILABILITY
+// ============================================================
+
+async function loadAvailability() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/api/interviews/availability`
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            result.status !== "success" ||
+            !result.data
+        ) {
+
+            return;
+        }
+
+
+        const data =
+            result.data;
+
+
+        let html = `
+
+            <p>
+
+                <strong>
+                    Recruiter:
+                </strong>
+
+                ${data.recruiter}
+
+            </p>
+
+
+            <p style="margin-top:10px;">
+
+                <strong>
+                    Date:
+                </strong>
+
+                ${data.date}
+
+            </p>
+
+
+            <br>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Time
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+        `;
+
+
+        data.all_slots.forEach(slot => {
+
+            html += `
+
+                <tr>
+
+                    <td>
+                        ${slot.time}
+                    </td>
+
+                    <td>
+
+                        ${
+                            slot.available
+
+                            ? `<span class="available">
+                                Available
+                               </span>`
+
+                            : `<span class="booked">
+                                Booked
+                               </span>`
+                        }
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+        html += `
+
+                </tbody>
+
+            </table>
+
+        `;
+
+
+        document.getElementById(
+            "availability"
+        ).innerHTML =
+            html;
+
+
+    } catch (error) {
+
+        console.error(
+            "Availability error:",
+            error
+        );
+
+
+        document.getElementById(
+            "availability"
+        ).innerHTML =
+            `<p class="error">
+                Failed to load availability.
+            </p>`;
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD DASHBOARD
+// ============================================================
+
+async function loadDashboard() {
+
+    await loadHealth();
+
+    await Promise.all([
+        loadCandidates(),
+        loadJobs(),
+        loadCandidateAnalytics(),
+        loadCallAnalytics(),
+        loadAvailability()
+    ]);
+
+}
+
+
+// ============================================================
+// START
+// ============================================================
+
+loadDashboard();
+
+</script>
+
+
+</body>
+
+</html>

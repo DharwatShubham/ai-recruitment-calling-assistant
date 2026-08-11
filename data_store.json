@@ -1,0 +1,143 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "123e4567-e89b-12d3-a456-426614174000",
+      "full_name": "John Doe",
+      "phone_number": "+1234567890",
+      "email": "john.doe@example.com",
+      "source": "ATS",
+      "ats_id": "GH-8901",
+      "created_at": "2026-08-11T07:15:10.631Z"
+    },
+    {
+      "candidate_id": "123e4567-e89b-12d3-a456-426614174001",
+      "full_name": "Jane Smith",
+      "phone_number": "+1987654321",
+      "email": "jane.smith@example.com",
+      "source": "Manual",
+      "ats_id": "GH-8902",
+      "created_at": "2026-08-11T07:15:10.632Z"
+    },
+    {
+      "candidate_id": "c5b471a9-3580-4182-b909-1e1709926a48",
+      "full_name": "Alice Walker",
+      "phone_number": "+15551234567",
+      "email": "alice@example.com",
+      "source": "manual",
+      "ats_id": "ATS-1786432553242",
+      "created_at": "2026-08-11T07:15:53.242Z"
+    },
+    {
+      "candidate_id": "6ca12b46-414e-43e5-a33c-02f3819c5839",
+      "full_name": "Robert Downey",
+      "phone_number": "+14155559876",
+      "email": "robert.downey@example.com",
+      "source": "manual",
+      "ats_id": "ATS-1786433482184",
+      "created_at": "2026-08-11T07:31:22.184Z"
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "456e7890-e89b-12d3-a456-426614174001",
+      "title": "Senior Backend Engineer",
+      "company_name": "TechCorp Global",
+      "location": "Remote / New York",
+      "employment_type": "Full-Time",
+      "salary_range": "$130,000 - $160,000",
+      "jd_text": "Seeking a Senior Backend Engineer with Node.js, PostgreSQL, microservices, and system architecture experience.",
+      "created_at": "2026-08-11T07:15:10.632Z"
+    },
+    {
+      "job_id": "456e7890-e89b-12d3-a456-426614174002",
+      "title": "AI Systems Specialist",
+      "company_name": "InnovateAI Labs",
+      "location": "San Francisco, CA",
+      "employment_type": "Full-Time",
+      "salary_range": "$150,000 - $190,000",
+      "jd_text": "Join our team building voice-enabled conversational AI agents and LLM integrations.",
+      "created_at": "2026-08-11T07:15:10.632Z"
+    }
+  ],
+  "recruiters": [
+    {
+      "recruiter_id": "789e0123-e89b-12d3-a456-426614174002",
+      "full_name": "Sarah Jenkins",
+      "phone_number": "+1555019283",
+      "email": "recruiter@company.com",
+      "company_name": "TechCorp Global",
+      "created_at": "2026-08-11T07:15:10.632Z"
+    }
+  ],
+  "call_sessions": [
+    {
+      "call_id": "CAq99nawha1t1786432840103",
+      "candidate_id": "123e4567-e89b-12d3-a456-426614174000",
+      "call_start_time": "2026-08-11T07:20:40.103Z",
+      "call_end_time": "2026-08-11T07:20:58.406Z",
+      "call_status": "completed",
+      "recording_url": "https://api.twilio.com/2010-04-01/Recordings/CAq99nawha1t1786432840103.mp3",
+      "transcript_text": "Hi! Yes, I am interested in the Senior Backend Engineer role. My current salary is $135,000, and I am looking for $150,000. My notice period is 2 weeks, and I am based in New York. I would love to schedule an interview for next Monday afternoon.",
+      "ai_confidence": 0.96,
+      "created_at": "2026-08-11T07:20:40.103Z"
+    },
+    {
+      "call_id": "CA87dcqbzxae1786433482190",
+      "candidate_id": "6ca12b46-414e-43e5-a33c-02f3819c5839",
+      "call_start_time": "2026-08-11T07:31:22.190Z",
+      "call_end_time": "2026-08-11T07:31:22.197Z",
+      "call_status": "completed",
+      "recording_url": "https://api.twilio.com/2010-04-01/Recordings/CA87dcqbzxae1786433482190.mp3",
+      "transcript_text": "Hi! Yes, I am interested in the Senior Backend Engineer role. My current salary is $135,000, and I am looking for $150,000. My notice period is 2 weeks, and I am based in New York. I would love to schedule an interview for next Monday afternoon.",
+      "ai_confidence": 0.96,
+      "created_at": "2026-08-11T07:31:22.190Z"
+    },
+    {
+      "call_id": "CA70w4jqa2eu1786436077292",
+      "candidate_id": "123e4567-e89b-12d3-a456-426614174000",
+      "call_start_time": "2026-08-11T08:14:37.292Z",
+      "call_end_time": null,
+      "call_status": "in_progress",
+      "recording_url": "https://api.twilio.com/2010-04-01/Recordings/CA70w4jqa2eu1786436077292.mp3",
+      "transcript_text": "Call initiated. Awaiting candidate response...",
+      "ai_confidence": 0.95,
+      "created_at": "2026-08-11T08:14:37.292Z"
+    }
+  ],
+  "candidate_responses": [],
+  "interview_schedules": [
+    {
+      "schedule_id": "e9297d91-9c50-460e-b93b-5df0401d87f2",
+      "candidate_id": "123e4567-e89b-12d3-a456-426614174000",
+      "job_id": "456e7890-e89b-12d3-a456-426614174001",
+      "interview_date": "2026-08-15",
+      "interview_time": "14:00:00",
+      "interviewer_name": "recruiter",
+      "calendar_event_id": "gcal_qail50q0j11786433032633",
+      "status": "scheduled",
+      "created_at": "2026-08-11T07:23:52.633Z"
+    },
+    {
+      "schedule_id": "46ab1329-fa35-41b6-ae71-b5cc7b6f95c6",
+      "candidate_id": "6ca12b46-414e-43e5-a33c-02f3819c5839",
+      "job_id": "456e7890-e89b-12d3-a456-426614174001",
+      "interview_date": "2026-08-18",
+      "interview_time": "14:00:00",
+      "interviewer_name": "recruiter",
+      "calendar_event_id": "gcal_5rma7qthzf1786433482211",
+      "status": "scheduled",
+      "created_at": "2026-08-11T07:31:22.211Z"
+    },
+    {
+      "schedule_id": "b60833e3-e829-4768-8c29-64f81c02896e",
+      "candidate_id": "123e4567-e89b-12d3-a456-426614174000",
+      "job_id": "456e7890-e89b-12d3-a456-426614174001",
+      "interview_date": "2026-08-15",
+      "interview_time": "14:00:00",
+      "interviewer_name": "recruiter",
+      "calendar_event_id": "gcal_11iwebf0en1786435686315",
+      "status": "scheduled",
+      "created_at": "2026-08-11T08:08:06.316Z"
+    }
+  ]
+}
