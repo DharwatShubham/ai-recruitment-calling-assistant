@@ -144,98 +144,89 @@ const callController = {
         }
     },
 
-    handleWebhook: async (req, res, webhookPayload) => {
-        try {
-            const callSid =
-                webhookPayload?.CallSid ||
-                webhookPayload?.call_id ||
-                'CA-' + Date.now();
+   handleWebhook: async (req, res, webhookPayload) => {
+    try {
+        const callSid =
+            webhookPayload?.CallSid ||
+            webhookPayload?.call_id ||
+            'CA-' + Date.now();
 
-            const queryString = req.url.includes('?')
-    ? req.url.split('?')[1]
-    : '';
+        const step =
+            webhookPayload?.step ||
+            'initial';
 
-const queryParams = new URLSearchParams(queryString);
+        const speechResult =
+            webhookPayload?.SpeechResult ||
+            webhookPayload?.speech_result ||
+            '';
 
-const step =
-    webhookPayload?.step ||
-    queryParams.get('step') ||
-    'initial';
+        console.log('Twilio webhook received:', {
+            callSid: callSid,
+            step: step,
+            speechResult: speechResult
+        });
 
-            const speechResult =
-                webhookPayload?.SpeechResult ||
-                webhookPayload?.speech_result ||
-                '';
-
-            console.log('Twilio webhook received:', {
-                callSid: callSid,
-                step: step,
-                speechResult: speechResult
+        if (step === 'process_response' && speechResult) {
+            store.updateCallSession(callSid, {
+                call_status: 'in_progress',
+                transcript_text: speechResult,
+                ai_confidence: 0.90
             });
 
-            if (step === 'process_response' && speechResult) {
+            const response = speechResult.toLowerCase();
 
-                store.updateCallSession(callSid, {
-                    call_status: 'in_progress',
-                    transcript_text: speechResult,
-                    ai_confidence: 0.90
-                });
+            let reply;
 
-                const response = speechResult.toLowerCase();
-
-                let reply;
-
-                if (
-                    response.includes('yes') ||
-                    response.includes('sure') ||
-                    response.includes('okay') ||
-                    response.includes('ok')
-                ) {
-                    reply =
-                        'Great. Thank you. Could you briefly tell me about your recent experience and the technologies you have worked with?';
-
-                } else if (
-                    response.includes('no') ||
-                    response.includes('not now') ||
-                    response.includes('busy')
-                ) {
-                    reply =
-                        'No problem. Thank you for letting me know. We can follow up with you at another time. Goodbye!';
-
-                } else {
-                    reply =
-                        'Thank you for sharing that. Could you tell me whether you are currently available for a new opportunity?';
-                }
-
-                const initialTwiml =
-    twilioService.generateTwiMLResponse(
-        'Hello. I am calling regarding your job application. Do you have a few minutes for a quick AI screening call?',
-        'https://ai-recruitment-calling-assistant-dwie.onrender.com/api/calls/webhook?step=process_response'
-    );
-
-                res.writeHead(200, {
-                    'Content-Type': 'text/xml'
-                });
-
-                res.end(twiml);
-                return;
+            if (
+                response.includes('yes') ||
+                response.includes('sure') ||
+                response.includes('okay') ||
+                response.includes('ok')
+            ) {
+                reply =
+                    'Great. Thank you. Could you briefly tell me about your recent experience and the technologies you have worked with?';
+            } else if (
+                response.includes('no') ||
+                response.includes('not now') ||
+                response.includes('busy')
+            ) {
+                reply =
+                    'No problem. Thank you for letting me know. We can follow up with you at another time. Goodbye!';
+            } else {
+                reply =
+                    'Thank you for sharing that. Could you tell me whether you are currently available for a new opportunity?';
             }
 
-            const initialTwiml =
+            const responseTwiml =
                 twilioService.generateTwiMLResponse(
-                    'Hello. I am calling regarding your job application. Do you have a few minutes for a quick AI screening call?',
-                    '/api/calls/webhook?step=process_response'
+                    reply,
+                    'https://ai-recruitment-calling-assistant-dwie.onrender.com/api/calls/webhook?step=process_response'
                 );
 
             res.writeHead(200, {
                 'Content-Type': 'text/xml'
             });
 
-            res.end(initialTwiml);
+            res.end(responseTwiml);
+            return;
+        }
 
-        } catch (error) {
-            console.error('Webhook error:', error);
+        const initialTwiml =
+            twilioService.generateTwiMLResponse(
+                'Hello. I am calling regarding your job application. Do you have a few minutes for a quick AI screening call?',
+                'https://ai-recruitment-calling-assistant-dwie.onrender.com/api/calls/webhook?step=process_response'
+            );
 
+        res.writeHead(200, {
+            'Content-Type': 'text/xml'
+        });
+
+        res.end(initialTwiml);
+
+    } catch (error) {
+        console.error('Webhook error:', error);
+
+        if (!res.headersSent) {
             res.writeHead(500, {
                 'Content-Type': 'application/json'
             });
@@ -245,8 +236,8 @@ const step =
                 details: error.message
             }));
         }
-    },
-
+    }
+},
     getCallRecording: (req, res, callId) => {
         try {
             const session = store.getCallSessionById(callId);

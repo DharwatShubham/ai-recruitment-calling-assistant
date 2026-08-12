@@ -49,7 +49,6 @@ const PORT = process.env.PORT || 3000;
 
 function getRequestBody(req) {
     return new Promise((resolve, reject) => {
-
         let body = '';
 
         req.on('data', chunk => {
@@ -57,20 +56,52 @@ function getRequestBody(req) {
         });
 
         req.on('end', () => {
-
             if (!body) {
-                return resolve(null);
+                resolve(null);
+                return;
             }
 
+            const contentType =
+                req.headers['content-type'] || '';
+
             try {
-                resolve(JSON.parse(body));
-            } catch (err) {
+                if (
+                    contentType.includes(
+                        'application/x-www-form-urlencoded'
+                    )
+                ) {
+                    const params = new URLSearchParams(body);
+                    const parsedBody = {};
+
+                    for (const [key, value] of params.entries()) {
+                        parsedBody[key] = value;
+                    }
+
+                    resolve(parsedBody);
+                    return;
+                }
+
+                if (
+                    contentType.includes('application/json')
+                ) {
+                    resolve(JSON.parse(body));
+                    return;
+                }
+
+                resolve(body);
+
+            } catch (error) {
+                console.error(
+                    'Request body parsing error:',
+                    error
+                );
+
                 resolve(body);
             }
         });
 
-        req.on('error', err => {
-            reject(err);
+        req.on('error', error => {
+            reject(error);
         });
     });
 }
@@ -459,13 +490,17 @@ if (
     req.method === 'POST' &&
     pathParts[2] === 'webhook'
 ) {
-
     const body = await getRequestBody(req);
+
+    const webhookPayload = {
+        ...(body || {}),
+        ...(parsedUrl.query || {})
+    };
 
     return callController.handleWebhook(
         req,
         res,
-        body
+        webhookPayload
     );
 }
 
