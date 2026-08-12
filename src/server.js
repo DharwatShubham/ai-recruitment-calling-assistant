@@ -436,20 +436,33 @@ const server = http.createServer(async (req, res) => {
             }
 
 
-            // POST /api/calls/webhook
-            if (
-                req.method === 'POST' &&
-                pathParts[2] === 'webhook'
-            ) {
+            // GET /api/calls/webhook
+// Used by Twilio Custom Voice testing
+if (
+    req.method === 'GET' &&
+    pathParts[2] === 'webhook'
+) {
+    return callController.handleWebhook(
+        req,
+        res,
+        {}
+    );
+}
 
-                const body = await getRequestBody(req);
+// POST /api/calls/webhook
+if (
+    req.method === 'POST' &&
+    pathParts[2] === 'webhook'
+) {
 
-                return callController.handleWebhook(
-                    req,
-                    res,
-                    body
-                );
-            }
+    const body = await getRequestBody(req);
+
+    return callController.handleWebhook(
+        req,
+        res,
+        body
+    );
+}
 
 
             const callId = pathParts[2];
