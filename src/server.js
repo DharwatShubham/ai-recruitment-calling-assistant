@@ -278,19 +278,24 @@ const server = http.createServer(async (req, res) => {
         ) {
 
             // POST /api/candidates/upload
-            if (
-                req.method === 'POST' &&
-                pathParts[2] === 'upload'
-            ) {
+            // POST /api/calls/webhook
+if (
+    req.method === 'POST' &&
+    pathParts[2] === 'webhook'
+) {
+    const body = await getRequestBody(req);
 
-                const body = await getRequestBody(req);
+    const webhookPayload = {
+        ...(body || {}),
+        ...(parsedUrl.query || {})
+    };
 
-                return candidateController.uploadCandidates(
-                    req,
-                    res,
-                    body
-                );
-            }
+    return callController.handleWebhook(
+        req,
+        res,
+        webhookPayload
+    );
+}
 
 
             const candidateId = pathParts[2];
