@@ -151,9 +151,16 @@ const callController = {
                 webhookPayload?.call_id ||
                 'CA-' + Date.now();
 
-            const step =
-                webhookPayload?.step ||
-                'initial';
+            const queryString = req.url.includes('?')
+    ? req.url.split('?')[1]
+    : '';
+
+const queryParams = new URLSearchParams(queryString);
+
+const step =
+    webhookPayload?.step ||
+    queryParams.get('step') ||
+    'initial';
 
             const speechResult =
                 webhookPayload?.SpeechResult ||
@@ -200,11 +207,11 @@ const callController = {
                         'Thank you for sharing that. Could you tell me whether you are currently available for a new opportunity?';
                 }
 
-                const twiml =
-                    twilioService.generateTwiMLResponse(
-                        reply,
-                        '/api/calls/webhook?step=process_response'
-                    );
+                const initialTwiml =
+    twilioService.generateTwiMLResponse(
+        'Hello. I am calling regarding your job application. Do you have a few minutes for a quick AI screening call?',
+        'https://ai-recruitment-calling-assistant-dwie.onrender.com/api/calls/webhook?step=process_response'
+    );
 
                 res.writeHead(200, {
                     'Content-Type': 'text/xml'
