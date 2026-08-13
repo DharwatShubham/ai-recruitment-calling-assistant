@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS recruiters (
 
 -- Table: call_sessions
 CREATE TABLE IF NOT EXISTS call_sessions (
-    call_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    call_id TEXT PRIMARY KEY,
     candidate_id UUID REFERENCES candidates(candidate_id) ON DELETE CASCADE,
     call_start_time TIMESTAMP WITH TIME ZONE,
     call_end_time TIMESTAMP WITH TIME ZONE,
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS call_sessions (
 -- Table: candidate_responses
 CREATE TABLE IF NOT EXISTS candidate_responses (
     response_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    call_id UUID REFERENCES call_sessions(call_id) ON DELETE CASCADE,
+    call_id TEXT REFERENCES call_sessions(call_id) ON DELETE CASCADE,
     question_code VARCHAR(50),
     response_text TEXT,
     response_value VARCHAR(100),

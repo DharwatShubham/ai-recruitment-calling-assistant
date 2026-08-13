@@ -102,9 +102,103 @@
       "transcript_text": "Call initiated. Awaiting candidate response...",
       "ai_confidence": 0.95,
       "created_at": "2026-08-11T08:14:37.292Z"
+    },
+    {
+      "call_id": "CA-test-storage-001",
+      "candidate_id": null,
+      "call_start_time": "2026-08-12T18:26:50.042Z",
+      "call_end_time": null,
+      "call_status": "in_progress",
+      "recording_url": "",
+      "transcript_text": "Call initiated.\nCandidate: Yes, I have few minutes.",
+      "ai_confidence": 0.9,
+      "created_at": "2026-08-12T18:26:50.042Z"
+    },
+    {
+      "call_id": "TEST123",
+      "candidate_id": null,
+      "call_start_time": "2026-08-13T04:05:42.796Z",
+      "call_end_time": null,
+      "call_status": "in_progress",
+      "recording_url": "",
+      "transcript_text": "\nQuestion 1: Great. Thank you. Are you currently available for a new job opportunity?\nCandidate: Yes\n",
+      "ai_confidence": 0.9,
+      "created_at": "2026-08-13T04:05:42.796Z",
+      "questions_answered": 1,
+      "question_index": 1
+    },
+    {
+      "call_id": "TEST999",
+      "candidate_id": null,
+      "call_start_time": "2026-08-13T04:06:37.915Z",
+      "call_end_time": "2026-08-13T04:07:42.895Z",
+      "call_status": "completed",
+      "recording_url": "",
+      "transcript_text": "\nQuestion 1: Great. Thank you. Are you currently available for a new job opportunity?\nCandidate: Yes\n\nQuestion 2: Could you briefly tell me about your recent professional experience?\nCandidate: I have two years of software development experience\n\nQuestion 3: What technologies, programming languages, or tools have you worked with recently?\nCandidate: Java Python SQL and React\n\nQuestion 4: What interests you most about this role, and why do you think you would be a good fit?\nCandidate: I am interested in this role because it matches my technical skills\n\nQuestion 5: Finally, could you tell me your current notice period or how soon you would be available to join?\nCandidate: I can join immediately\n",
+      "ai_confidence": 0.93,
+      "created_at": "2026-08-13T04:06:37.915Z",
+      "questions_answered": 5,
+      "question_index": 4
     }
   ],
-  "candidate_responses": [],
+  "candidate_responses": [
+    {
+      "response_id": "e4885e07-c890-482a-bf30-eb2de589d5ac",
+      "call_id": "CA-test-storage-001",
+      "question_code": "SCREENING_RESPONSE",
+      "response_text": "Yes, I have few minutes.",
+      "response_value": "Yes, I have few minutes.",
+      "created_at": "2026-08-12T18:26:50.046Z"
+    },
+    {
+      "response_id": "adcacf74-76cf-40b4-a338-d67a562e0ea0",
+      "call_id": "TEST123",
+      "question_code": "AVAILABILITY",
+      "response_text": "Yes",
+      "response_value": "Yes",
+      "created_at": "2026-08-13T04:05:42.798Z"
+    },
+    {
+      "response_id": "b16d78e0-0d2f-4403-a2db-5777d83d3402",
+      "call_id": "TEST999",
+      "question_code": "AVAILABILITY",
+      "response_text": "Yes",
+      "response_value": "Yes",
+      "created_at": "2026-08-13T04:06:37.916Z"
+    },
+    {
+      "response_id": "51275d34-95bc-47ac-867c-11ff07cd27a8",
+      "call_id": "TEST999",
+      "question_code": "EXPERIENCE",
+      "response_text": "I have two years of software development experience",
+      "response_value": "I have two years of software development experience",
+      "created_at": "2026-08-13T04:06:51.100Z"
+    },
+    {
+      "response_id": "08d76e7f-34de-4286-ac4c-84dc6322cb03",
+      "call_id": "TEST999",
+      "question_code": "TECHNOLOGIES",
+      "response_text": "Java Python SQL and React",
+      "response_value": "Java Python SQL and React",
+      "created_at": "2026-08-13T04:07:01.091Z"
+    },
+    {
+      "response_id": "3d28d203-69b1-406a-bc9b-2bf3acdc7651",
+      "call_id": "TEST999",
+      "question_code": "ROLE_INTEREST",
+      "response_text": "I am interested in this role because it matches my technical skills",
+      "response_value": "I am interested in this role because it matches my technical skills",
+      "created_at": "2026-08-13T04:07:23.373Z"
+    },
+    {
+      "response_id": "130c6114-5c8b-467c-bd71-3014e3cb142d",
+      "call_id": "TEST999",
+      "question_code": "NOTICE_PERIOD",
+      "response_text": "I can join immediately",
+      "response_value": "I can join immediately",
+      "created_at": "2026-08-13T04:07:42.894Z"
+    }
+  ],
   "interview_schedules": [
     {
       "schedule_id": "e9297d91-9c50-460e-b93b-5df0401d87f2",
