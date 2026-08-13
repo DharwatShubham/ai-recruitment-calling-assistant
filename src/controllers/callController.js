@@ -176,8 +176,8 @@ const callController = {
         if (step === 'initial' || !callSid) {
 
             const initialQuestion =
-                'Hello. I am calling regarding your job application. ' +
-                'Do you have a few minutes for a quick AI screening call?';
+    'Hello. I am calling from WINIT regarding your job application. ' +
+    'Do you have a few minutes for a quick AI screening call?';
 
             const initialTwiml =
                 twilioService.generateTwiMLResponse(
@@ -230,45 +230,64 @@ const callController = {
         // 5. Define the 5 recruitment questions
         // ========================================================
 
-        const questions = [
+       const questions = [
 
-            {
-                code: 'AVAILABILITY',
-                text:
-                    'Great. Thank you. Are you currently available ' +
-                    'for a new job opportunity?'
-            },
+    {
+        code: 'AVAILABILITY',
+        text:
+            'Great. Thank you. Are you currently available ' +
+            'for a new job opportunity?'
+    },
 
-            {
-                code: 'EXPERIENCE',
-                text:
-                    'Could you briefly tell me about your recent ' +
-                    'professional experience?'
-            },
+    {
+        code: 'EXPERIENCE',
+        text:
+            'Could you briefly tell me about your recent ' +
+            'professional experience?'
+    },
 
-            {
-                code: 'TECHNOLOGIES',
-                text:
-                    'What technologies, programming languages, ' +
-                    'or tools have you worked with recently?'
-            },
+    {
+        code: 'TECHNOLOGIES',
+        text:
+            'What technologies, programming languages, ' +
+            'or tools have you worked with recently?'
+    },
 
-            {
-                code: 'ROLE_INTEREST',
-                text:
-                    'What interests you most about this role, ' +
-                    'and why do you think you would be a good fit?'
-            },
+    {
+        code: 'ROLE_INTEREST',
+        text:
+            'What interests you most about this role, ' +
+            'and why do you think you would be a good fit?'
+    },
 
-            {
-                code: 'NOTICE_PERIOD',
-                text:
-                    'Finally, could you tell me your current notice ' +
-                    'period or how soon you would be available to join?'
-            }
+    {
+        code: 'EXPECTED_CTC',
+        text:
+            'What are your expected CTC for this role?'
+    },
 
-        ];
+    {
+        code: 'RELOCATION',
+        text:
+            'This role is based in Hyderabad. ' +
+            'Would you be comfortable relocating to Hyderabad for this role?'
+    },
 
+    {
+        code: 'INTERVIEW_AVAILABILITY',
+        text:
+            'If you are shortlisted, would you be available ' +
+            'for an interview based on the available time slots?'
+    },
+
+    {
+        code: 'NOTICE_PERIOD',
+        text:
+            'Could you tell me your current notice period ' +
+            'or how soon you would be available to join?'
+    }
+
+];
 
         // ========================================================
         // 6. Handle candidate's response
