@@ -146,14 +146,16 @@ const callController = {
 
    handleWebhook: async (req, res, webhookPayload) => {
     try {
+        // ========================================================
+        // 1. Get Twilio call information
+        // ========================================================
+
         const callSid =
             webhookPayload?.CallSid ||
-            webhookPayload?.call_id ||
-            'CA-' + Date.now();
+            webhookPayload?.call_id;
 
         const step =
-            webhookPayload?.step ||
-            'initial';
+            webhookPayload?.step || 'initial';
 
         const speechResult =
             webhookPayload?.SpeechResult ||
@@ -161,45 +163,25 @@ const callController = {
             '';
 
         console.log('Twilio webhook received:', {
-            callSid: callSid,
-            step: step,
-            speechResult: speechResult
+            callSid,
+            step,
+            speechResult
         });
 
-        if (step === 'process_response' && speechResult) {
-            store.updateCallSession(callSid, {
-                call_status: 'in_progress',
-                transcript_text: speechResult,
-                ai_confidence: 0.90
-            });
 
-            const response = speechResult.toLowerCase();
+        // ========================================================
+        // 2. Initial call
+        // ========================================================
 
-            let reply;
+        if (step === 'initial' || !callSid) {
 
-            if (
-                response.includes('yes') ||
-                response.includes('sure') ||
-                response.includes('okay') ||
-                response.includes('ok')
-            ) {
-                reply =
-                    'Great. Thank you. Could you briefly tell me about your recent experience and the technologies you have worked with?';
-            } else if (
-                response.includes('no') ||
-                response.includes('not now') ||
-                response.includes('busy')
-            ) {
-                reply =
-                    'No problem. Thank you for letting me know. We can follow up with you at another time. Goodbye!';
-            } else {
-                reply =
-                    'Thank you for sharing that. Could you tell me whether you are currently available for a new opportunity?';
-            }
+            const initialQuestion =
+                'Hello. I am calling regarding your job application. ' +
+                'Do you have a few minutes for a quick AI screening call?';
 
-            const responseTwiml =
+            const initialTwiml =
                 twilioService.generateTwiMLResponse(
-                    reply,
+                    initialQuestion,
                     'https://ai-recruitment-calling-assistant-dwie.onrender.com/api/calls/webhook?step=process_response'
                 );
 
@@ -207,34 +189,325 @@ const callController = {
                 'Content-Type': 'text/xml'
             });
 
-            res.end(responseTwiml);
+            res.end(initialTwiml);
+
             return;
         }
 
-        const initialTwiml =
+
+        // ========================================================
+        // 3. Get existing call session
+        // ========================================================
+
+        let existingSession =
+            store.getCallSessionById(callSid);
+
+
+        // ========================================================
+        // 4. Create session if it does not exist
+        // ========================================================
+
+        if (!existingSession) {
+
+            existingSession = store.addCallSession({
+                call_id: callSid,
+                candidate_id: null,
+                call_start_time: new Date().toISOString(),
+                call_status: 'in_progress',
+                transcript_text: '',
+                ai_confidence: 0.95,
+
+                // Question currently being asked
+                question_index: 0,
+
+                // Number of questions answered
+                questions_answered: 0
+            });
+        }
+
+
+        // ========================================================
+        // 5. Define the 5 recruitment questions
+        // ========================================================
+
+        const questions = [
+
+            {
+                code: 'AVAILABILITY',
+                text:
+                    'Great. Thank you. Are you currently available ' +
+                    'for a new job opportunity?'
+            },
+
+            {
+                code: 'EXPERIENCE',
+                text:
+                    'Could you briefly tell me about your recent ' +
+                    'professional experience?'
+            },
+
+            {
+                code: 'TECHNOLOGIES',
+                text:
+                    'What technologies, programming languages, ' +
+                    'or tools have you worked with recently?'
+            },
+
+            {
+                code: 'ROLE_INTEREST',
+                text:
+                    'What interests you most about this role, ' +
+                    'and why do you think you would be a good fit?'
+            },
+
+            {
+                code: 'NOTICE_PERIOD',
+                text:
+                    'Finally, could you tell me your current notice ' +
+                    'period or how soon you would be available to join?'
+            }
+
+        ];
+
+
+        // ========================================================
+        // 6. Handle candidate's response
+        // ========================================================
+
+        if (step === 'process_response') {
+
+            const currentQuestionIndex =
+                Number(existingSession.question_index || 0);
+
+            const candidateAnswer =
+                speechResult.trim();
+
+
+            // ----------------------------------------------------
+            // If candidate did not respond
+            // ----------------------------------------------------
+
+            if (!candidateAnswer) {
+
+                const currentQuestion =
+                    questions[currentQuestionIndex];
+
+                const retryMessage =
+                    'I am sorry, I did not hear your response. ' +
+                    currentQuestion.text;
+
+                const retryTwiml =
+                    twilioService.generateTwiMLResponse(
+                        retryMessage,
+                        'https://ai-recruitment-calling-assistant-dwie.onrender.com/api/calls/webhook?step=process_response'
+                    );
+
+                res.writeHead(200, {
+                    'Content-Type': 'text/xml'
+                });
+
+                res.end(retryTwiml);
+
+                return;
+            }
+
+
+            // ----------------------------------------------------
+            // Save candidate response
+            // ----------------------------------------------------
+
+            const previousTranscript =
+                existingSession.transcript_text || '';
+
+            const questionNumber =
+                currentQuestionIndex + 1;
+
+            const currentQuestion =
+                questions[currentQuestionIndex];
+
+
+            const updatedTranscript =
+                previousTranscript +
+                '\nQuestion ' +
+                questionNumber +
+                ': ' +
+                currentQuestion.text +
+                '\nCandidate: ' +
+                candidateAnswer +
+                '\n';
+
+
+            // ----------------------------------------------------
+            // Update call session
+            // ----------------------------------------------------
+
+            store.updateCallSession(
+                callSid,
+                {
+                    call_status: 'in_progress',
+
+                    transcript_text:
+                        updatedTranscript,
+
+                    ai_confidence:
+                        0.90,
+
+                    questions_answered:
+                        questionNumber
+                }
+            );
+
+
+            // ----------------------------------------------------
+            // Save structured candidate response
+            // ----------------------------------------------------
+
+            store.addCandidateResponse({
+                call_id: callSid,
+
+                question_code:
+                    currentQuestion.code,
+
+                response_text:
+                    candidateAnswer,
+
+                response_value:
+                    candidateAnswer
+            });
+
+
+            // ====================================================
+            // 7. Check whether all 5 questions are completed
+            // ====================================================
+
+            if (currentQuestionIndex >= questions.length - 1) {
+
+                store.updateCallSession(
+                    callSid,
+                    {
+                        call_status: 'completed',
+
+                        call_end_time:
+                            new Date().toISOString(),
+
+                        questions_answered:
+                            questions.length,
+
+                        ai_confidence:
+                            0.93
+                    }
+                );
+
+
+                const completionMessage =
+                    'Thank you for your time and for answering ' +
+                    'all of my questions. Your responses have been ' +
+                    'recorded and our recruitment team will review ' +
+                    'your application. We will contact you regarding ' +
+                    'the next steps. Have a great day. Goodbye!';
+
+
+                const completionTwiml =
+                    twilioService.generateTwiMLResponse(
+                        completionMessage,
+                        ''
+                    );
+
+
+                res.writeHead(200, {
+                    'Content-Type': 'text/xml'
+                });
+
+                res.end(completionTwiml);
+
+                return;
+            }
+
+
+            // ====================================================
+            // 8. Move to the next question
+            // ====================================================
+
+            const nextQuestionIndex =
+                currentQuestionIndex + 1;
+
+            const nextQuestion =
+                questions[nextQuestionIndex];
+
+
+            store.updateCallSession(
+                callSid,
+                {
+                    question_index:
+                        nextQuestionIndex,
+
+                    call_status:
+                        'in_progress'
+                }
+            );
+
+
+            // ----------------------------------------------------
+            // Generate next question
+            // ----------------------------------------------------
+
+            const nextQuestionTwiml =
+                twilioService.generateTwiMLResponse(
+                    nextQuestion.text,
+                    'https://ai-recruitment-calling-assistant-dwie.onrender.com/api/calls/webhook?step=process_response'
+                );
+
+
+            res.writeHead(200, {
+                'Content-Type': 'text/xml'
+            });
+
+            res.end(nextQuestionTwiml);
+
+            return;
+        }
+
+
+        // ========================================================
+        // 9. Fallback
+        // ========================================================
+
+        const fallbackTwiml =
             twilioService.generateTwiMLResponse(
-                'Hello. I am calling regarding your job application. Do you have a few minutes for a quick AI screening call?',
-                'https://ai-recruitment-calling-assistant-dwie.onrender.com/api/calls/webhook?step=process_response'
+                'Thank you for your time. Goodbye!',
+                ''
             );
 
         res.writeHead(200, {
             'Content-Type': 'text/xml'
         });
 
-        res.end(initialTwiml);
+        res.end(fallbackTwiml);
+
 
     } catch (error) {
-        console.error('Webhook error:', error);
+
+        console.error(
+            'Webhook error:',
+            error
+        );
+
 
         if (!res.headersSent) {
+
             res.writeHead(500, {
                 'Content-Type': 'application/json'
             });
 
-            res.end(JSON.stringify({
-                error: 'Webhook event handling failed',
-                details: error.message
-            }));
+            res.end(
+                JSON.stringify({
+                    error:
+                        'Webhook event handling failed',
+
+                    details:
+                        error.message
+                })
+            );
         }
     }
 },
