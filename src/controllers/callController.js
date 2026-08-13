@@ -197,7 +197,7 @@ console.log('Candidate found for call:', {
         if (step === 'initial' || !callSid) {
 
             const initialQuestion =
-    'Hello. I am calling from WINIT regarding your job application. ' +
+    'Hello. I am calling from  W-I-N-I-T  regarding your job application. ' +
     'Do you have a few minutes for a quick AI screening call?';
 
             const initialTwiml =
