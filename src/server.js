@@ -484,6 +484,16 @@ if (
     );
 }
 
+// GET /api/calls
+if (
+    req.method === 'GET' &&
+    !pathParts[2]
+) {
+    return callController.getAllCalls(
+        req,
+        res
+    );
+}
 
             const callId = pathParts[2];
 

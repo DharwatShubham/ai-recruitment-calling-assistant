@@ -162,6 +162,13 @@ const callController = {
             webhookPayload?.speech_result ||
             '';
 
+         const phoneNumber =
+    webhookPayload?.To ||
+    webhookPayload?.to ||
+    webhookPayload?.From ||
+    webhookPayload?.from ||
+    '';
+
         console.log('Twilio webhook received:', {
             callSid,
             step,
@@ -170,8 +177,22 @@ const callController = {
 
 
         // ========================================================
-        // 2. Initial call
-        // ========================================================
+// 2. Find candidate using phone number
+// ========================================================
+
+const candidate =
+    store.getCandidateByPhone(phoneNumber);
+
+console.log('Candidate found for call:', {
+    phoneNumber,
+    candidateId: candidate?.candidate_id,
+    candidateName: candidate?.full_name
+});
+
+
+// ========================================================
+// 3. Initial call
+// ========================================================
 
         if (step === 'initial' || !callSid) {
 
@@ -207,11 +228,12 @@ const callController = {
         // 4. Create session if it does not exist
         // ========================================================
 
-        if (!existingSession) {
+if (!existingSession) {
 
-            existingSession = store.addCallSession({
-                call_id: callSid,
-                candidate_id: null,
+    existingSession = store.addCallSession({
+        call_id: callSid,
+        candidate_id:
+            candidate ? candidate.candidate_id : null,
                 call_start_time: new Date().toISOString(),
                 call_status: 'in_progress',
                 transcript_text: '',
@@ -621,7 +643,55 @@ const callController = {
                 details: error.message
             }));
         }
-    }
+    },
+    getAllCalls: async (req, res) => {
+        try {
+            const sessions = store.getCallSessions();
+
+            const calls = sessions.map(session => {
+                const candidate = session.candidate_id
+                    ? store.getCandidateById(session.candidate_id)
+                    : null;
+
+                return {
+                    call_id: session.call_id,
+                    candidate_id: session.candidate_id || null,
+                    candidate_name: candidate
+                        ? candidate.full_name
+                        : 'Unknown Candidate',
+                    phone_number: candidate
+                        ? candidate.phone_number
+                        : 'N/A',
+                    call_status: session.call_status,
+                    start_time: session.call_start_time,
+                    end_time: session.call_end_time,
+                    ai_confidence: session.ai_confidence
+                };
+            });
+
+            res.writeHead(200, {
+                'Content-Type': 'application/json'
+            });
+
+            res.end(JSON.stringify({
+                status: 'success',
+                count: calls.length,
+                data: calls
+            }));
+
+        } catch (error) {
+            console.error('Error fetching calls:', error);
+
+            res.writeHead(500, {
+                'Content-Type': 'application/json'
+            });
+
+            res.end(JSON.stringify({
+                status: 'error',
+                message: 'Failed to fetch calls'
+            }));
+        }
+    },
 };
 
 module.exports = callController;
