@@ -104,6 +104,19 @@ class DataStore {
     getCandidateById(id) {
         return this.data.candidates.find(c => c.candidate_id === id);
     }
+    
+    getCandidateByPhone(phone) {
+    if (!phone) return null;
+
+    const normalizePhone = value =>
+        String(value || '').replace(/\D/g, '');
+
+    const normalizedPhone = normalizePhone(phone);
+
+    return this.data.candidates.find(candidate =>
+        normalizePhone(candidate.phone_number) === normalizedPhone
+    ) || null;
+}
 
     addCandidate(candidateData) {
         const newCandidate = {
